@@ -1,7 +1,6 @@
 #some Env variables
 env:
-    IMAGE_NAME: "vuln-image"
-    DOCKERFILE_CONTEXT: "result/"
+    IMAGE_NAME: "taskyalpa"
   
 name: No VULN SCAN
 
@@ -31,7 +30,6 @@ jobs:
     - name: Build and save
       uses: docker/build-push-action@master
       with:
-        context: ${{ env.DOCKERFILE_CONTEXT }}
         tags: ${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         load: true
       
@@ -44,6 +42,5 @@ jobs:
     - name: Push
       uses: docker/build-push-action@master
       with:
-        context: ${{ env.DOCKERFILE_CONTEXT }}
         push: true
         tags: ${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
