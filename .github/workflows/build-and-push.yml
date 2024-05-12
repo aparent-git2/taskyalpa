@@ -2,19 +2,15 @@
 env:
     IMAGE_NAME: "taskyalpa"
   
-name: No VULN SCAN
+name: Build And Push
 
 on: 
   pull_request:
     types: [ opened, reopened, synchronize ]
     branches: [ master, main ]
     
-  ##pull_request: conditions to scan only when modifying the a directory
-    ##paths:
-    #- 'seed-data/**'
-
 jobs:
-  tests:
+  Build:
     runs-on: ubuntu-latest
     
     steps:
