@@ -1,0 +1,50 @@
+#some Env variables
+env:
+    IMAGE_NAME: "taskyalpa"
+    IMAGE_TAG: "scanned"
+  
+name: Build And Push - No Scan
+
+on: 
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    branches: [ master, main ]
+    
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@master
+    
+    - name: Build and save
+      uses: docker/build-push-action@master
+      with:
+        tags: ${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+        load: true
+        
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'docker.io/${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}'
+        format: 'table'
+        exit-code: '0'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
+      
+    - name: Login to the registry
+      uses: docker/login-action@master
+      with:
+        username: ${{ secrets.REGISTRY_USER }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        
+    - name: Push
+      uses: docker/build-push-action@master
+      with:
+        push: true
+        tags: ${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
