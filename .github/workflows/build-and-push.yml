@@ -1,6 +1,7 @@
 #some Env variables
 env:
     IMAGE_NAME: "taskyalpa"
+    IMAGE_TAG: "scanned"
   
 name: Build And Push
 
@@ -23,8 +24,18 @@ jobs:
     - name: Build and save
       uses: docker/build-push-action@master
       with:
-        tags: ${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:latest
+        tags: ${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
         load: true
+        
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'docker.io/${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}'
+        format: 'table'
+        exit-code: '0'
+        ignore-unfixed: true
+        vuln-type: 'os,library'
+        severity: 'CRITICAL,HIGH'
       
     - name: Login to the registry
       uses: docker/login-action@master
@@ -36,4 +47,4 @@ jobs:
       uses: docker/build-push-action@master
       with:
         push: true
-        tags: ${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:latest
+        tags: ${{ secrets.REGISTRY_USER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
