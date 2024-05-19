@@ -1,7 +1,7 @@
 #some Env variables
 env:
     IMAGE_NAME: "taskyalpa"
-    IMAGE_TAG: "scanned"
+    IMAGE_TAG: "latest"
   
 name: Build And Push - No Scan
 
